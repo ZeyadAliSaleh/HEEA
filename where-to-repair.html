@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Where to Repair - ECycle</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: #f8f9fa;
+      color: #1d1d1f;
+    }
+
+    header {
+      background: white;
+      padding: 15px 40px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .logo-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #52c234 0%, #34c759 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+    }
+
+    .logo-text {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1d1d1f;
+    }
+
+    .logo-text span {
+      color: #52c234;
+    }
+
+    .back-btn {
+      background: #f5f5f7;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1d1d1f;
+    }
+
+    .back-btn:hover {
+      background: #e8e8ed;
+      transform: translateX(-4px);
+    }
+
+    .hero-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 80px 40px;
+      text-align: center;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-section::before {
+      content: '🔧';
+      position: absolute;
+      font-size: 200px;
+      opacity: 0.1;
+      top: -50px;
+      right: 10%;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .hero-section::after {
+      content: '⚙️';
+      position: absolute;
+      font-size: 150px;
+      opacity: 0.1;
+      bottom: -30px;
+      left: 5%;
+      animation: float 8s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(10deg); }
+    }
+
+    .hero-section h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-section p {
+      font-size: 20px;
+      opacity: 0.95;
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    .search-section {
+      max-width: 900px;
+      margin: -50px auto 60px;
+      padding: 0 40px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .search-box {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    }
+
+    .search-box h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1d1d1f;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .search-input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 16px 20px;
+      border: 2px solid #e8e8ed;
+      border-radius: 12px;
+      font-size: 16px;
+      transition: all 0.3s;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    }
+
+    .search-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px 40px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .search-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .location-btn {
+      background: #34c759;
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .location-btn:hover {
+      background: #30d158;
+      transform: scale(1.05);
+    }
+
+    .quick-locations {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .quick-loc-btn {
+      background: #f5f5f7;
+      border: 2px solid transparent;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      color: #1d1d1f;
+    }
+
+    .quick-loc-btn:hover {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .results-section {
+      max-width: 1400px;
+      margin: 0 auto 60px;
+      padding: 0 40px;
+      display: none;
+    }
+
+    .results-section.active {
+      display: block;
+    }
+
+    .results-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .results-header h2 {
+      font-size: 36px;
+      font-weight: 700;
+      color: #1d1d1f;
+      margin-bottom: 8px;
+    }
+
+    .results-count {
+      font-size: 18px;
+      color: #6e6e73;
+    }
+
+    .stores-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 24px;
+    }
+
+    .store-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+
+    .store-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      border-color: #667eea;
+    }
+
+    .store-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .store-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .store-info {
+      flex: 1;
+    }
+
+    .store-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1d1d1f;
+      margin-bottom: 4px;
+    }
+
+    .store-type {
+      font-size: 12px;
+      color: #667eea;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .store-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 4px;
+      font-size: 14px;
+    }
+
+    .store-details {
+      margin-bottom: 20px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      color: #6e6e73;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .detail-icon {
+      font-size: 16px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .store-services {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .service-tag {
+      background: #f5f5f7;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #1d1d1f;
+    }
+
+    .store-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+
+    .btn-secondary:hover {
+      background: #34c759;
+      color: white;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #6e6e73;
+    }
+
+    .empty-state-icon {
+      font-size: 80px;
+      opacity: 0.3;
+      margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 12px;
+    }
+
+    footer {
+      background: #1d1d1f;
+      color: white;
+      padding: 40px;
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    footer p {
+      opacity: 0.8;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .hero-section h1 {
+        font-size: 32px;
+      }
+
+      .hero-section p {
+        font-size: 16px;
+      }
+
+      .search-section {
+        padding: 0 20px;
+      }
+
+      .search-box {
+        padding: 24px;
+      }
+
+      .search-input-group {
+        flex-direction: column;
+      }
+
+      .stores-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .results-section {
+        padding: 0 20px;
+      }
+
+      .store-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-section">
+      <div class="logo" onclick="window.location.href='customer-dashboard.html'">
+        <div class="logo-icon">♻️</div>
+        <div class="logo-text">E<span>Cycle</span></div>
+      </div>
+    </div>
+    <button class="back-btn" onclick="window.location.href='customer-dashboard.html'">
+      ← Back to Home
+    </button>
+  </header>
+
+  <div class="hero-section">
+    <h1>🔧 Find Repair Services Near You</h1>
+    <p>Locate trusted electronics repair shops in Selangor and Kuala Lumpur</p>
+  </div>
+
+  <div class="search-section">
+    <div class="search-box">
+      <h2>📍 Enter Your Location</h2>
+      <div class="search-input-group">
+        <input 
+          type="text" 
+          class="search-input" 
+          id="locationInput" 
+          placeholder="Enter address, postcode, or area (e.g., Cyberjaya, 50450, Bukit Bintang)"
+          onkeypress="if(event.key==='Enter') searchStores()"
+        >
+        <button class="search-btn" onclick="searchStores()">
+          <span>🔍</span>
+          <span>Search</span>
+        </button>
+      </div>
+      <div class="quick-locations">
+        <button class="quick-loc-btn" onclick="quickSearch('Petaling Jaya')">Petaling Jaya</button>
+        <button class="quick-loc-btn" onclick="quickSearch('Kuala Lumpur')">KL City</button>
+        <button class="quick-loc-btn" onclick="quickSearch('Cyberjaya')">Cyberjaya</button>
+        <button class="quick-loc-btn" onclick="quickSearch('Shah Alam')">Shah Alam</button>
+        <button class="quick-loc-btn" onclick="quickSearch('Subang Jaya')">Subang Jaya</button>
+        <button class="quick-loc-btn" onclick="quickSearch('Ampang')">Ampang</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-section" id="resultsSection">
+    <div class="results-header">
+      <h2>Repair Shops Near You</h2>
+      <p class="results-count" id="resultsCount"></p>
+    </div>
+    <div class="stores-grid" id="storesGrid"></div>
+  </div>
+
+  <footer>
+    <p>© 2025 Department of Creative AI, Universiti Teknologi Malaysia</p>
+    <p>creativeai@utm.my • Kuala Lumpur, Malaysia</p>
+  </footer>
+
+  <script>
+    // Real repair stores database in Selangor and Kuala Lumpur ONLY
+    const repairStores = [
+      {
+        name: "Mr. DIY Digital Devices Repair Centre",
+        type: "Electronics & Gadgets",
+        address: "No. 1, Jalan SS15/4D, SS15, 47500 Subang Jaya, Selangor",
+        phone: "+60 3-5635 2278",
+        hours: "Mon-Sun: 10:00 AM - 9:00 PM",
+        services: ["Phone Repair", "Laptop Repair", "Tablet Repair", "Accessories"],
+        area: "Subang Jaya",
+        state: "Selangor",
+        coords: "3.0745,101.5850",
+        rating: "4.2"
+      },
+      {
+        name: "iCare Repair Centre",
+        type: "Apple Specialist",
+        address: "Lot G-31, Ground Floor, Sunway Pyramid, Jalan PJS 11/15, 47500 Subang Jaya, Selangor",
+        phone: "+60 3-5621 6668",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["iPhone Repair", "iPad Repair", "MacBook Repair", "Apple Watch"],
+        area: "Subang Jaya",
+        state: "Selangor",
+        coords: "3.0714,101.6067",
+        rating: "4.5"
+      },
+      {
+        name: "Ace Gadget Repair",
+        type: "Multi-Brand Service",
+        address: "F-G-11, Jalan PJU 1/43, Dataran Prima, 47301 Petaling Jaya, Selangor",
+        phone: "+60 3-7865 6789",
+        hours: "Mon-Sat: 10:30 AM - 7:30 PM",
+        services: ["Samsung Repair", "Huawei Repair", "Gaming Console", "Data Recovery"],
+        area: "Petaling Jaya",
+        state: "Selangor",
+        coords: "3.1142,101.6137",
+        rating: "4.3"
+      },
+      {
+        name: "TechMedic KL",
+        type: "Computer & Laptop Specialists",
+        address: "D-3-10, Block D, Jalan PJU 1/42a, Dataran Prima, 47301 Petaling Jaya, Selangor",
+        phone: "+60 3-7880 3456",
+        hours: "Tue-Sun: 11:00 AM - 8:00 PM",
+        services: ["Laptop Repair", "Desktop PC", "Hardware Upgrade", "Virus Removal"],
+        area: "Petaling Jaya",
+        state: "Selangor",
+        coords: "3.1156,101.6125",
+        rating: "4.6"
+      },
+      {
+        name: "Mobile Clinic Repair Centre",
+        type: "Smartphone Experts",
+        address: "Lot LG-38, Lower Ground Floor, Pavilion KL, 168 Jalan Bukit Bintang, 55100 Kuala Lumpur",
+        phone: "+60 3-2148 2288",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["Screen Replacement", "Battery Change", "Water Damage", "Board Repair"],
+        area: "Bukit Bintang",
+        state: "Kuala Lumpur",
+        coords: "3.1494,101.7127",
+        rating: "4.4"
+      },
+      {
+        name: "Switch Apple Authorised Service Provider",
+        type: "Apple Authorised",
+        address: "Lot 2.24.00, Level 2, Suria KLCC, Kuala Lumpur City Centre, 50088 Kuala Lumpur",
+        phone: "+60 3-2382 6622",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["Official Apple Service", "Warranty Repair", "Genuine Parts", "Trade-in"],
+        area: "KLCC",
+        state: "Kuala Lumpur",
+        coords: "3.1578,101.7116",
+        rating: "4.7"
+      },
+      {
+        name: "Gadget Fix Centre",
+        type: "Electronics Repair",
+        address: "G-09, Ground Floor, The Curve, Mutiara Damansara, 47810 Petaling Jaya, Selangor",
+        phone: "+60 3-7728 8899",
+        hours: "Mon-Sun: 10:00 AM - 9:00 PM",
+        services: ["All Brands", "Quick Repair", "Screen Protection", "Accessories"],
+        area: "Mutiara Damansara",
+        state: "Selangor",
+        coords: "3.1532,101.6130",
+        rating: "4.1"
+      },
+      {
+        name: "ComputerStore.my Service Centre",
+        type: "Computer Hardware",
+        address: "2-26, Jalan PJU 7/3, Mutiara Damansara, 47810 Petaling Jaya, Selangor",
+        phone: "+60 3-7728 3388",
+        hours: "Mon-Sat: 10:00 AM - 7:00 PM",
+        services: ["PC Building", "Component Repair", "Gaming Setup", "IT Solutions"],
+        area: "Mutiara Damansara",
+        state: "Selangor",
+        coords: "3.1520,101.6142",
+        rating: "4.5"
+      },
+      {
+        name: "Phone Hospital",
+        type: "Mobile & Tablet Repair",
+        address: "S-09, Ground Floor, One Utama Shopping Centre, 47800 Petaling Jaya, Selangor",
+        phone: "+60 3-7710 5678",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["Same Day Repair", "Screen Fix", "Camera Repair", "Software Fix"],
+        area: "Bandar Utama",
+        state: "Selangor",
+        coords: "3.1504,101.6152",
+        rating: "4.2"
+      },
+      {
+        name: "Express Gadget Repair",
+        type: "Fast Repair Service",
+        address: "Lot G17, Ground Floor, Mid Valley Megamall, Lingkaran Syed Putra, 59200 Kuala Lumpur",
+        phone: "+60 3-2287 9999",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["Express Service", "Walk-in Welcome", "All Brands", "Warranty"],
+        area: "Mid Valley",
+        state: "Kuala Lumpur",
+        coords: "3.1184,101.6767",
+        rating: "4.3"
+      },
+      {
+        name: "Cyberia Technology",
+        type: "IT & Electronics",
+        address: "2635, Jalan Usahawan 1, Cyberjaya, 63000 Cyberjaya, Selangor",
+        phone: "+60 3-8322 1234",
+        hours: "Mon-Fri: 9:00 AM - 6:00 PM, Sat: 10:00 AM - 4:00 PM",
+        services: ["Business IT", "Network Setup", "Server Repair", "Software"],
+        area: "Cyberjaya",
+        state: "Selangor",
+        coords: "2.9177,101.6542",
+        rating: "4.4"
+      },
+      {
+        name: "Smart Fix Electronics",
+        type: "Home Appliances",
+        address: "No. 48, Jalan SS2/72, SS2, 47300 Petaling Jaya, Selangor",
+        phone: "+60 3-7875 4321",
+        hours: "Mon-Sat: 9:30 AM - 6:30 PM",
+        services: ["Washing Machine", "Refrigerator", "Microwave", "Air Con"],
+        area: "Petaling Jaya",
+        state: "Selangor",
+        coords: "3.1186,101.6241",
+        rating: "4.0"
+      },
+      {
+        name: "Digital Life Repair Centre",
+        type: "Gadgets & Gaming",
+        address: "F-1-6, Jalan PJS 8/9, Mentari Plaza, 46150 Petaling Jaya, Selangor",
+        phone: "+60 3-5638 7890",
+        hours: "Mon-Sun: 11:00 AM - 8:00 PM",
+        services: ["PS5/PS4 Repair", "Xbox Repair", "Nintendo Switch", "Controller Fix"],
+        area: "Petaling Jaya",
+        state: "Selangor",
+        coords: "3.1064,101.6289",
+        rating: "4.5"
+      },
+      {
+        name: "Tech Hub KL",
+        type: "All Electronics",
+        address: "Lot 3.31, Level 3, Berjaya Times Square, 1 Jalan Imbi, 55100 Kuala Lumpur",
+        phone: "+60 3-2117 8888",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["Laptop Service", "Phone Repair", "Tablet Repair", "Accessories"],
+        area: "Imbi",
+        state: "Kuala Lumpur",
+        coords: "3.1426,101.7101",
+        rating: "4.2"
+      },
+      {
+        name: "i-Station Service Centre",
+        type: "Smartphone Repair",
+        address: "G-05, Ground Floor, Plaza Low Yat, Jalan Bintang, 55100 Kuala Lumpur",
+        phone: "+60 3-2148 9876",
+        hours: "Mon-Sun: 10:00 AM - 9:00 PM",
+        services: ["iPhone", "Samsung", "Xiaomi", "OPPO/Vivo"],
+        area: "Bukit Bintang",
+        state: "Kuala Lumpur",
+        coords: "3.1477,101.7097",
+        rating: "4.3"
+      },
+      {
+        name: "ReLife Gadget Repair",
+        type: "Eco-Friendly Repair",
+        address: "18-G, Jalan PJU 5/9, Dataran Sunway, Kota Damansara, 47810 Petaling Jaya, Selangor",
+        phone: "+60 3-6142 5566",
+        hours: "Tue-Sun: 10:30 AM - 7:30 PM",
+        services: ["Refurbished Devices", "Eco Repair", "Trade-in", "Recycling"],
+        area: "Kota Damansara",
+        state: "Selangor",
+        coords: "3.1601,101.5911",
+        rating: "4.6"
+      },
+      {
+        name: "GreenTech Repair Centre",
+        type: "Sustainable Electronics",
+        address: "B-G-08, Block B, Jalan PJU 10/10, Damansara Damai, 47830 Petaling Jaya, Selangor",
+        phone: "+60 3-6142 3333",
+        hours: "Mon-Sat: 10:00 AM - 7:00 PM",
+        services: ["E-Waste Recycling", "Repair & Reuse", "Parts Recovery", "Green Disposal"],
+        area: "Damansara Damai",
+        state: "Selangor",
+        coords: "3.1835,101.5801",
+        rating: "4.4"
+      },
+      {
+        name: "Shah Alam Tech Repair",
+        type: "Local Electronics Shop",
+        address: "No. 45, Jalan Plumbum P7/P, Seksyen 7, 40000 Shah Alam, Selangor",
+        phone: "+60 3-5511 7788",
+        hours: "Mon-Sat: 9:00 AM - 6:00 PM",
+        services: ["Computer Repair", "Phone Service", "Home Visit", "Affordable"],
+        area: "Shah Alam",
+        state: "Selangor",
+        coords: "3.0738,101.5183",
+        rating: "4.1"
+      },
+      {
+        name: "Ampang Tech Solutions",
+        type: "IT & Gadgets",
+        address: "G-12, Jalan Mamanda 9, Taman Dato Ahmad Razali, 68000 Ampang, Selangor",
+        phone: "+60 3-4297 6655",
+        hours: "Mon-Fri: 10:00 AM - 7:00 PM, Sat: 10:00 AM - 5:00 PM",
+        services: ["Corporate IT", "Personal Gadgets", "CCTV Setup", "Networking"],
+        area: "Ampang",
+        state: "Selangor",
+        coords: "3.1488,101.7624",
+        rating: "4.3"
+      },
+      {
+        name: "Quick Fix Mobile Centre",
+        type: "Express Mobile Repair",
+        address: "LG-K05, Paradigm Mall, 1 Jalan SS7/26A, 47301 Petaling Jaya, Selangor",
+        phone: "+60 3-7865 1122",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["30 Min Screen Fix", "Battery Replace", "Water Damage", "Unlocking"],
+        area: "Kelana Jaya",
+        state: "Selangor",
+        coords: "3.1067,101.5925",
+        rating: "4.2"
+      },
+      {
+        name: "Panasonic Service Centre KL",
+        type: "Home Appliances",
+        address: "Lot 1-11, Jalan Tun Mohd Fuad 1, Taman Tun Dr Ismail, 60000 Kuala Lumpur",
+        phone: "+60 3-7726 3000",
+        hours: "Mon-Fri: 8:30 AM - 5:30 PM, Sat: 8:30 AM - 1:00 PM",
+        services: ["Washing Machine", "Refrigerator", "Air Conditioner", "Microwave"],
+        area: "Taman Tun Dr Ismail",
+        state: "Kuala Lumpur",
+        coords: "3.1394,101.6289",
+        rating: "4.3"
+      },
+      {
+        name: "LG Electronics Service Centre",
+        type: "Home Appliances",
+        address: "No. 2, Jalan Astaka U8/84, Seksyen U8, 40150 Shah Alam, Selangor",
+        phone: "+60 3-7845 3199",
+        hours: "Mon-Sat: 9:00 AM - 6:00 PM",
+        services: ["TV Repair", "Washing Machine", "Refrigerator", "Air Con"],
+        area: "Shah Alam",
+        state: "Selangor",
+        coords: "3.0862,101.5340",
+        rating: "4.4"
+      },
+      {
+        name: "Samsung Service Centre Sunway",
+        type: "Electronics & Home Appliances",
+        address: "LG2-58A, Lower Ground 2, Sunway Pyramid, 47500 Subang Jaya, Selangor",
+        phone: "+60 3-7492 9090",
+        hours: "Mon-Sun: 10:00 AM - 10:00 PM",
+        services: ["TV", "Refrigerator", "Washing Machine", "Smartphone", "Tablet"],
+        area: "Subang Jaya",
+        state: "Selangor",
+        coords: "3.0714,101.6067",
+        rating: "4.5"
+      },
+      {
+        name: "Electrolux Customer Care Centre",
+        type: "Kitchen & Home Appliances",
+        address: "No. 1, Jalan Tiaj 2/1, Taman Industri Alam Jaya, 42300 Puncak Alam, Selangor",
+        phone: "+60 3-6145 1000",
+        hours: "Mon-Fri: 9:00 AM - 5:00 PM",
+        services: ["Vacuum Cleaner", "Oven", "Cooker Hood", "Dishwasher"],
+        area: "Puncak Alam",
+        state: "Selangor",
+        coords: "3.2395,101.4037",
+        rating: "4.2"
+      },
+      {
+        name: "Sharp Service Centre",
+        type: "Electronics & Appliances",
+        address: "No. 7, Jalan PJS 8/15, Bandar Sunway, 46150 Petaling Jaya, Selangor",
+        phone: "+60 3-5638 3636",
+        hours: "Mon-Sat: 9:00 AM - 6:00 PM",
+        services: ["Air Purifier", "Microwave", "TV", "Audio System"],
+        area: "Bandar Sunway",
+        state: "Selangor",
+        coords: "3.0599,101.6045",
+        rating: "4.1"
+      },
+      {
+        name: "Toshiba Service Centre",
+        type: "Home Appliances",
+        address: "19A, Jalan 14/29, Seksyen 14, 46100 Petaling Jaya, Selangor",
+        phone: "+60 3-7954 0808",
+        hours: "Mon-Fri: 9:00 AM - 6:00 PM, Sat: 9:00 AM - 1:00 PM",
+        services: ["Refrigerator", "Washing Machine", "TV", "Air Con"],
+        area: "Petaling Jaya",
+        state: "Selangor",
+        coords: "3.0954,101.6480",
+        rating: "4.3"
+      },
+      {
+        name: "Daikin Service Centre KL",
+        type: "Air Conditioning Specialist",
+        address: "No. 2, Jalan Tago 2, Taman Perindustrian UEP, 47600 Subang Jaya, Selangor",
+        phone: "+60 3-8024 9888",
+        hours: "Mon-Fri: 8:30 AM - 5:30 PM, Sat: 8:30 AM - 12:30 PM",
+        services: ["Air Conditioner", "Air Purifier", "Service & Maintenance"],
+        area: "Subang Jaya",
+        state: "Selangor",
+        coords: "3.0533,101.5873",
+        rating: "4.6"
+      },
+      {
+        name: "Midea Service Centre",
+        type: "Home Appliances",
+        address: "No. 38, Jalan Pendaftar U1/54, Seksyen U1, 40150 Shah Alam, Selangor",
+        phone: "+60 3-5523 8668",
+        hours: "Mon-Sat: 9:00 AM - 6:00 PM",
+        services: ["Refrigerator", "Washing Machine", "Air Con", "Water Dispenser"],
+        area: "Shah Alam",
+        state: "Selangor",
+        coords: "3.0894,101.5397",
+        rating: "4.0"
+      },
+      {
+        name: "Bosch Home Appliances Service",
+        type: "Kitchen Appliances",
+        address: "Unit G-01, Ground Floor, Menara Lien Hoe, Persiaran Tropicana, 47410 Petaling Jaya, Selangor",
+        phone: "+60 3-7861 8668",
+        hours: "Mon-Fri: 9:00 AM - 6:00 PM",
+        services: ["Oven", "Dishwasher", "Cooker Hood", "Coffee Machine"],
+        area: "Petaling Jaya",
+        state: "Selangor",
+        coords: "3.1290,101.6345",
+        rating: "4.5"
+      },
+      {
+        name: "Elba Kitchen Appliances Service",
+        type: "Kitchen Appliances",
+        address: "Lot 3, Jalan Kemajuan, Seksyen 13, 46200 Petaling Jaya, Selangor",
+        phone: "+60 3-7957 8877",
+        hours: "Mon-Fri: 9:00 AM - 5:30 PM, Sat: 9:00 AM - 1:00 PM",
+        services: ["Built-in Oven", "Hob", "Cooker Hood", "Kitchen Appliances"],
+        area: "Petaling Jaya",
+        state: "Selangor",
+        coords: "3.1053,101.6365",
+        rating: "4.2"
+      },
+      {
+        name: "Khind Service Centre",
+        type: "Small Appliances",
+        address: "Lot 13851, Jalan Seruling 59/1, Kawasan Perindustrian Subang, 40150 Shah Alam, Selangor",
+        phone: "+60 3-5191 1111",
+        hours: "Mon-Fri: 8:30 AM - 5:30 PM, Sat: 8:30 AM - 12:30 PM",
+        services: ["Rice Cooker", "Iron", "Fan", "Blender", "Kettle"],
+        area: "Shah Alam",
+        state: "Selangor",
+        coords: "3.1142,101.5245",
+        rating: "4.1"
+      },
+      {
+        name: "Philips Customer Service Centre",
+        type: "Electronics & Small Appliances",
+        address: "Ground Floor, Menara Philips, No. 2, Lebuh Bandar Utama, 47800 Petaling Jaya, Selangor",
+        phone: "+60 3-7953 3777",
+        hours: "Mon-Fri: 9:00 AM - 6:00 PM",
+        services: ["Air Fryer", "Blender", "Iron", "Vacuum", "Personal Care"],
+        area: "Bandar Utama",
+        state: "Selangor",
+        coords: "3.1489,101.6158",
+        rating: "4.4"
+      },
+      {
+        name: "Tefal Service Centre",
+        type: "Kitchen Appliances",
+        address: "Unit A-G-3A, Block A, Aked Esplanad, Jalan Batai Laut 4, Taman Intan, 41300 Klang, Selangor",
+        phone: "+60 3-3324 2288",
+        hours: "Mon-Sat: 10:00 AM - 7:00 PM",
+        services: ["Pressure Cooker", "Air Fryer", "Iron", "Blender"],
+        area: "Klang",
+        state: "Selangor",
+        coords: "3.0449,101.4484",
+        rating: "4.0"
+      },
+      {
+        name: "Cuckoo Service Centre KL",
+        type: "Kitchen & Water Appliances",
+        address: "No. 1-G, Jalan PJU 5/6, Dataran Sunway, Kota Damansara, 47810 Petaling Jaya, Selangor",
+        phone: "+60 3-6145 6868",
+        hours: "Mon-Sun: 10:00 AM - 8:00 PM",
+        services: ["Rice Cooker", "Water Purifier", "Air Purifier", "Multi-cooker"],
+        area: "Kota Damansara",
+        state: "Selangor",
+        coords: "3.1589,101.5882",
+        rating: "4.5"
+      },
+      {
+        name: "Mistral Home Appliance Service",
+        type: "Home Appliances",
+        address: "No. 25, Jalan Taming Sari 3, Taman Perindustrian Taming Jaya, 43300 Balakong, Selangor",
+        phone: "+60 3-8961 1188",
+        hours: "Mon-Fri: 9:00 AM - 6:00 PM, Sat: 9:00 AM - 1:00 PM",
+        services: ["Fan", "Air Cooler", "Water Heater", "Kitchen Appliances"],
+        area: "Balakong",
+        state: "Selangor",
+        coords: "3.0314,101.7590",
+        rating: "4.1"
+      },
+      {
+        name: "Pensonic Repair Centre",
+        type: "Electronics & Appliances",
+        address: "No. 2, Jalan TPP 1/3, Taman Industri Puchong, 47100 Puchong, Selangor",
+        phone: "+60 3-8066 6888",
+        hours: "Mon-Sat: 9:00 AM - 6:00 PM",
+        services: ["TV", "Fan", "Iron", "Rice Cooker", "Blender"],
+        area: "Puchong",
+        state: "Selangor",
+        coords: "3.0138,101.6152",
+        rating: "4.0"
+      },
+      {
+        name: "Faber Service Centre",
+        type: "Kitchen Ventilation",
+        address: "Lot 1505, Jalan KPB 6, Kawasan Perindustrian Balakong, 43300 Seri Kembangan, Selangor",
+        phone: "+60 3-8961 6688",
+        hours: "Mon-Fri: 9:00 AM - 5:00 PM, Sat: 9:00 AM - 1:00 PM",
+        services: ["Cooker Hood", "Hob", "Oven", "Kitchen Ventilation"],
+        area: "Seri Kembangan",
+        state: "Selangor",
+        coords: "2.9990,101.7237",
+        rating: "4.3"
+      },
+      {
+        name: "Brandt Kitchen Appliances Service",
+        type: "Premium Kitchen Appliances",
+        address: "Unit B-1-8, Plaza Damas, 60 Jalan Sri Hartamas 1, 50480 Kuala Lumpur",
+        phone: "+60 3-6201 8288",
+        hours: "Mon-Fri: 10:00 AM - 6:00 PM",
+        services: ["Built-in Oven", "Dishwasher", "Wine Cooler", "Coffee Maker"],
+        area: "Sri Hartamas",
+        state: "Kuala Lumpur",
+        coords: "3.1640,101.6520",
+        rating: "4.4"
+      },
+      {
+        name: "Cornell Appliance Service",
+        type: "Small Kitchen Appliances",
+        address: "No. 4, Jalan Industri PBP 2, Taman Industri Pusat Bandar Puchong, 47100 Puchong, Selangor",
+        phone: "+60 3-8066 2288",
+        hours: "Mon-Sat: 9:00 AM - 6:00 PM",
+        services: ["Rice Cooker", "Slow Cooker", "Air Fryer", "Kettle", "Blender"],
+        area: "Puchong",
+        state: "Selangor",
+        coords: "3.0175,101.6089",
+        rating: "4.1"
+      },
+      {
+        name: "Acson Air-Con Service Centre",
+        type: "Air Conditioning",
+        address: "No. 3A, Jalan Juruukur U1/19, Seksyen U1, 40150 Shah Alam, Selangor",
+        phone: "+60 3-5569 3888",
+        hours: "Mon-Fri: 8:30 AM - 5:30 PM, Sat: 8:30 AM - 12:30 PM",
+        services: ["Air Conditioner", "Installation", "Maintenance", "Repair"],
+        area: "Shah Alam",
+        state: "Selangor",
+        coords: "3.0876,101.5332",
+        rating: "4.5"
+      }
+    ];
+
+    function searchStores() {
+      const input = document.getElementById('locationInput').value.trim().toLowerCase();
+      if (!input) {
+        alert('Please enter a location to search');
+        return;
+      }
+      displayResults(input);
+    }
+
+    function quickSearch(area) {
+      document.getElementById('locationInput').value = area;
+      displayResults(area.toLowerCase());
+    }
+
+    function useCurrentLocation() {
+      // Function removed - GPS location feature disabled
+    }
+
+    function displayResults(searchTerm) {
+      // Filter stores based on search term (area, postcode, or address keywords)
+      const filteredStores = repairStores.filter(store => {
+        const searchLower = searchTerm.toLowerCase();
+        return store.area.toLowerCase().includes(searchLower) ||
+               store.address.toLowerCase().includes(searchLower) ||
+               store.state.toLowerCase().includes(searchLower) ||
+               store.name.toLowerCase().includes(searchLower);
+      });
+
+      // Show results section
+      const resultsSection = document.getElementById('resultsSection');
+      resultsSection.classList.add('active');
+
+      // Update count
+      const resultsCount = document.getElementById('resultsCount');
+      resultsCount.textContent = `Found ${filteredStores.length} repair shop${filteredStores.length !== 1 ? 's' : ''} in ${searchTerm}`;
+
+      // Display stores
+      const storesGrid = document.getElementById('storesGrid');
+      
+      if (filteredStores.length === 0) {
+        storesGrid.innerHTML = `
+          <div class="empty-state" style="grid-column: 1 / -1;">
+            <div class="empty-state-icon">😔</div>
+            <h3>No Repair Shops Found</h3>
+            <p>Try searching for a different area in Selangor or Kuala Lumpur</p>
+          </div>
+        `;
+        return;
+      }
+
+      storesGrid.innerHTML = filteredStores.map(store => `
+        <div class="store-card">
+          <div class="store-header">
+            <div class="store-icon">🔧</div>
+            <div class="store-info">
+              <div class="store-name">${store.name}</div>
+              <div class="store-type">${store.type}</div>
+              <div class="store-rating">
+                <span style="color: #FFB800;">⭐</span>
+                <strong>${store.rating}</strong>
+                <span style="color: #6e6e73;">/5.0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="store-details">
+            <div class="detail-row">
+              <span class="detail-icon">📍</span>
+              <span>${store.address}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-icon">📞</span>
+              <span>${store.phone}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-icon">🕒</span>
+              <span>${store.hours}</span>
+            </div>
+          </div>
+
+          <div class="store-services">
+            ${store.services.map(service => `
+              <span class="service-tag">${service}</span>
+            `).join('')}
+          </div>
+
+          <div class="store-actions">
+            <a 
+              href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(store.address)}" 
+              target="_blank"
+              class="action-btn btn-primary"
+              style="width: 100%;"
+            >
+              <span>🗺️</span>
+              <span>View on Map</span>
+            </a>
+          </div>
+        </div>
+      `).join('');
+
+      // Scroll to results
+      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Initialize - show all stores on page load for browsing
+    window.addEventListener('DOMContentLoaded', () => {
+      // Optional: Auto-show all stores or wait for search
+      // displayResults('selangor kuala lumpur'); // Uncomment to show all stores on load
+    });
+  </script>
+
+</body>
+</html>
