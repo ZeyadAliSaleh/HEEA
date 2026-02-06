@@ -460,15 +460,15 @@
         <p>Pre-Disposal System</p>
       </div>
       <nav class="sidebar-menu">
-        <a href="#" class="menu-item">
+        <a href="admin-dashboard.html" class="menu-item">
           <span>🏠</span>
           Dashboard
         </a>
-        <a href="#" class="menu-item">
+        <a href="form-builder.html" class="menu-item">
           <span>📋</span>
           Form Builder
         </a>
-        <a href="#" class="menu-item">
+        <a href="submission.html" class="menu-item">
           <span>📝</span>
           Submissions
         </a>
@@ -476,7 +476,7 @@
           <span>🤖</span>
           AI Review
         </a>
-        <a href="#" class="menu-item">
+        <a href="customer-dashboard.html" class="menu-item">
           <span>🌐</span>
           View Website
         </a>
@@ -840,11 +840,7 @@
 
         // Create update payload with only necessary fields
         const updateData = {
-          id: currentSubmission.id,
-          form_id: currentSubmission.form_id,
-          form_title: currentSubmission.form_title,
-          data: currentSubmission.data,
-          ai_recommendation: aiRecommendation,  // Match database column name
+          aiRecommendation: aiRecommendation,  // Match database column name
           status: 'accepted'
         };
 
