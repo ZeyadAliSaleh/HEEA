@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Submissions - Admin Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: #f5f5f7;
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+    }
+
+    /* Subtle background pattern */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(circle at 20% 50%, rgba(0, 122, 255, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(52, 199, 89, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+  background: linear-gradient(180deg, #1d1d1f 0%, #2d2d2f 100%);
+  color: white;
+  padding: 24px 0;
+  position: fixed;
+  height: 100vh;
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+      padding: 0 24px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-header h2 {
+      font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: 4px;
+  color: white;
+    }
+
+    .sidebar-header p {
+      font-size: 13px;
+      color: #86868b;
+      font-weight: 400;
+    }
+
+    .sidebar-menu {
+      padding: 24px 0;
+    }
+
+    .menu-item {
+      padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s;
+  border-left: 3px solid transparent;
+    }
+
+    .menu-item:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
+    .menu-item.active {
+      background: rgba(255, 255, 255, 0.1);
+  border-left-color: #0071e3;
+  color: white;
+    }
+
+    .menu-item span {
+      font-size: 20px;
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 280px;
+      flex: 1;
+      padding: 32px 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .top-bar h1 {
+      font-size: 32px;
+      font-weight: 600;
+      color: #1d1d1f;
+      letter-spacing: -0.03em;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tab {
+      padding: 10px 20px;
+      background: white;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-weight: 500;
+      font-size: 14px;
+      color: #1d1d1f;
+    }
+
+    .filter-tab:hover {
+      background: #f5f5f7;
+    }
+
+    .filter-tab.active {
+      background: #007aff;
+      color: white;
+      border-color: #007aff;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
+
+    /* Submissions Container */
+    .submissions-container {
+      background: white;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .submission-card {
+      border: 1px solid #e5e5e7;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .submission-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      border-color: #007aff;
+      transform: translateY(-2px);
+    }
+
+    .submission-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f5f5f7;
+    }
+
+    .submission-title {
+      font-size: 19px;
+      color: #1d1d1f;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .submission-date {
+      font-size: 12px;
+      color: #86868b;
+      margin-top: 6px;
+    }
+
+    .submission-data {
+      margin-bottom: 20px;
+    }
+
+    .data-row {
+      display: flex;
+      padding: 12px 0;
+      border-bottom: 1px solid #f5f5f7;
+    }
+
+    .data-row:last-child {
+      border-bottom: none;
+    }
+
+    .data-label {
+      width: 180px;
+      font-weight: 500;
+      color: #86868b;
+      font-size: 13px;
+    }
+
+    .data-value {
+      flex: 1;
+      color: #1d1d1f;
+      font-size: 14px;
+      word-break: break-word;
+    }
+
+    .submission-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 13px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-accept {
+      background: #34c759;
+      color: white;
+    }
+
+    .btn-accept:hover {
+      background: #2ab04a;
+      box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+    }
+
+    .btn-reject {
+      background: #ff3b30;
+      color: white;
+    }
+
+    .btn-reject:hover {
+      background: #e0291e;
+      box-shadow: 0 4px 12px rgba(255, 59, 48, 0.3);
+    }
+
+    .btn-view {
+      background: #007aff;
+      color: white;
+    }
+
+    .btn-view:hover {
+      background: #0051d5;
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    }
+
+    .status-badge {
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-block;
+    }
+
+    .status-pending {
+      background: rgba(255, 149, 0, 0.1);
+      color: #ff9500;
+    }
+
+    .status-accepted {
+      background: rgba(52, 199, 89, 0.1);
+      color: #34c759;
+    }
+
+    .status-rejected {
+      background: rgba(255, 59, 48, 0.1);
+      color: #ff3b30;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #86868b;
+    }
+
+    .empty-state-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .empty-state h3 {
+      font-size: 19px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: #86868b;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 32px;
+      border-radius: 20px;
+      width: 700px;
+      max-width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e5e5e7;
+    }
+
+    .modal-header h2 {
+      font-size: 24px;
+      color: #1d1d1f;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .close-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      color: #86868b;
+      background: rgba(0, 0, 0, 0.05);
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .close-btn:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: #1d1d1f;
+    }
+
+    /* Responsive */
+    @media screen and (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 24px 20px;
+      }
+
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .submission-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .submission-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .data-row {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .data-label {
+        width: 100%;
+      }
+
+      .modal-content {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2>📊 Admin Panel</h2>
+        <p>Pre-Disposal System</p>
+      </div>
+      
+      <div class="sidebar-menu">
+        <a href="admin-dashboard.html" class="menu-item">
+          <span>🏠</span>
+          Dashboard
+        </a>
+        <a href="form-builder.html" class="menu-item">
+          <span>📝</span>
+          Form Builder
+        </a>
+        <a href="submission.html" class="menu-item active">
+          <span>📋</span>
+          Submissions
+        </a>
+        <a href="admin-ai-review.html" class="menu-item">
+        <span>🤖</span>
+        AI Review
+        </a>
+        <a href="customer-dashboard.html" class="menu-item">
+          <span>🌐</span>
+          View Website
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+      <div class="top-bar">
+        <h1>Form Submissions</h1>
+      </div>
+
+      <div class="filter-tabs">
+        <div class="filter-tab active" data-filter="all" onclick="filterSubmissions('all')">
+          All Submissions
+        </div>
+        <div class="filter-tab" data-filter="pending" onclick="filterSubmissions('pending')">
+          ⏳ Pending
+        </div>
+        <div class="filter-tab" data-filter="accepted" onclick="filterSubmissions('accepted')">
+          ✅ Accepted
+        </div>
+        <div class="filter-tab" data-filter="rejected" onclick="filterSubmissions('rejected')">
+          ❌ Rejected
+        </div>
+      </div>
+
+      <div class="submissions-container" id="submissions-list">
+        <p style="color: #86868b; text-align: center; padding: 20px;">Loading submissions...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- View Details Modal -->
+  <div id="view-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Submission Details</h2>
+        <button class="close-btn" onclick="closeModal()">×</button>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:4000/api';
+    let allSubmissions = [];
+    let allForms = [];
+    let currentFilter = 'all';
+
+    async function loadForms() {
+      try {
+        const response = await fetch(`${API_URL}/forms`);
+        allForms = await response.json();
+      } catch (error) {
+        console.error('Error loading forms:', error);
+      }
+    }
+
+    async function loadSubmissions() {
+      try {
+        const response = await fetch(`${API_URL}/submissions`);
+        allSubmissions = await response.json();
+        console.log('Loaded submissions:', allSubmissions);
+        displaySubmissions();
+      } catch (error) {
+        console.error('Error loading submissions:', error);
+        document.getElementById('submissions-list').innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">⚠️</div>
+            <h3>Error Loading Submissions</h3>
+            <p>Please check your connection and refresh the page.</p>
+          </div>
+        `;
+      }
+    }
+
+    function getFieldLabel(formId, fieldId) {
+      const form = allForms.find(f => f.id === formId);
+      if (!form) return fieldId;
+      
+      const field = form.fields.find(f => f.id === fieldId);
+      return field ? field.label : fieldId;
+    }
+
+    function displaySubmissions() {
+      const container = document.getElementById('submissions-list');
+      
+      let filtered = allSubmissions;
+      if (currentFilter !== 'all') {
+        filtered = allSubmissions.filter(s => s.status === currentFilter);
+      }
+
+      filtered.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">🔭</div>
+            <h3>No Submissions Found</h3>
+            <p>There are no ${currentFilter === 'all' ? '' : currentFilter} submissions at the moment.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(sub => {
+        const displayFields = Object.entries(sub.data).slice(0, 4).map(([fieldId, value]) => {
+          const label = getFieldLabel(sub.formId, fieldId);
+          return { label, value };
+        });
+
+        return `
+        <div class="submission-card">
+          <div class="submission-header">
+            <div>
+              <div class="submission-title">${sub.formTitle || 'Form Submission'}</div>
+              <div class="submission-date">📅 ${new Date(sub.submittedAt).toLocaleString()}</div>
+            </div>
+            <span class="status-badge status-${sub.status}">${sub.status.toUpperCase()}</span>
+          </div>
+          
+          <div class="submission-data">
+            ${displayFields.map(({ label, value }) => `
+              <div class="data-row">
+                <div class="data-label">${label}:</div>
+                <div class="data-value">${value}</div>
+              </div>
+            `).join('')}
+            ${Object.keys(sub.data).length > 4 ? `
+              <p style="color: #86868b; font-size: 13px; margin-top: 12px; text-align: center;">
+                + ${Object.keys(sub.data).length - 4} more fields
+              </p>
+            ` : ''}
+          </div>
+
+          <div class="submission-actions">
+            <button class="btn btn-view" onclick="viewDetails('${sub.id}')">👁️ View Details</button>
+            ${sub.status === 'pending' ? `
+            <button class="btn" style="background: #667eea; color: white;" onclick="window.location.href='admin-ai-review.html?id=${sub.id}'">
+              🤖 AI Review
+            </button>
+              <button class="btn btn-accept" onclick="updateStatus('${sub.id}', 'accepted')">✅ Accept</button>
+              <button class="btn btn-reject" onclick="updateStatus('${sub.id}', 'rejected')">❌ Reject</button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    function filterSubmissions(filter) {
+      currentFilter = filter;
+      
+      document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+      
+      displaySubmissions();
+    }
+
+    async function updateStatus(submissionId, status) {
+      const action = status === 'accepted' ? 'accept' : 'reject';
+      if (!confirm(`Are you sure you want to ${action} this submission?`)) return;
+
+      try {
+        const response = await fetch(`${API_URL}/submissions/${submissionId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+
+        if (response.ok) {
+          await loadSubmissions();
+          alert(`Submission ${status} successfully!`);
+        } else {
+          throw new Error('Update failed');
+        }
+      } catch (error) {
+        alert('Error updating submission status. Please try again.');
+        console.error('Error:', error);
+      }
+    }
+
+    function viewDetails(submissionId) {
+      const submission = allSubmissions.find(s => s.id === submissionId);
+      if (!submission) return;
+
+      const modalBody = document.getElementById('modal-body');
+      
+      const allFields = Object.entries(submission.data).map(([fieldId, value]) => {
+        const label = getFieldLabel(submission.formId, fieldId);
+        return { label, value };
+      });
+
+      modalBody.innerHTML = `
+        <div style="margin-bottom: 24px; padding: 20px; background: #f5f5f7; border-radius: 12px;">
+          <h3 style="color: #1d1d1f; margin-bottom: 8px; font-size: 19px; font-weight: 600;">${submission.formTitle || 'Form Submission'}</h3>
+          <p style="color: #86868b; font-size: 13px;">📅 ${new Date(submission.submittedAt).toLocaleString()}</p>
+          <p style="margin-top: 12px;">
+            <span class="status-badge status-${submission.status}">${submission.status.toUpperCase()}</span>
+          </p>
+        </div>
+
+        <div style="background: white; padding: 24px; border: 1px solid #e5e5e7; border-radius: 12px;">
+          <h4 style="color: #1d1d1f; margin-bottom: 20px; font-size: 17px; font-weight: 600;">📋 Submission Details</h4>
+          ${allFields.map(({ label, value }) => `
+            <div style="margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #f5f5f7;">
+              <strong style="display: block; margin-bottom: 8px; color: #86868b; font-size: 13px; font-weight: 500;">${label}:</strong>
+              <p style="color: #1d1d1f; font-size: 15px; line-height: 1.6;">${value}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        ${submission.status === 'pending' ? `
+          <div style="display: flex; gap: 12px; margin-top: 28px;">
+            <button class="btn btn-accept" style="flex: 1; padding: 12px;" onclick="updateStatus('${submission.id}', 'accepted'); closeModal();">
+              ✅ Accept Submission
+            </button>
+            <button class="btn btn-reject" style="flex: 1; padding: 12px;" onclick="updateStatus('${submission.id}', 'rejected'); closeModal();">
+              ❌ Reject Submission
+            </button>
+          </div>
+        ` : ''}
+      `;
+
+      document.getElementById('view-modal').classList.add('show');
+    }
+
+    function closeModal() {
+      document.getElementById('view-modal').classList.remove('show');
+    }
+
+    async function init() {
+      await loadForms();
+      await loadSubmissions();
+    }
+
+    init();
+    setInterval(loadSubmissions, 30000);
+  </script>
+
+</body>
+</html>

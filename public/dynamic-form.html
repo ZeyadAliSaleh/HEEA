@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Form Submission</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #f5f5f7 0%, #ececf1 100%);
+      -webkit-font-smoothing: antialiased;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Animated background decorations */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0, 122, 255, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      bottom: -20%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(52, 199, 89, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 15s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -30px) scale(1.1); }
+    }
+
+    /* HEADER */
+    header {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+      padding: 0 40px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1d1d1f;
+      letter-spacing: -0.02em;
+    }
+
+    header ul {
+      list-style: none;
+      display: flex;
+      gap: 32px;
+      margin: 0;
+      padding: 0;
+    }
+
+    header ul li a {
+      color: #1d1d1f;
+      text-decoration: none;
+      font-weight: 400;
+      font-size: 12px;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+    }
+
+    header ul li a:hover {
+      opacity: 1;
+    }
+
+    /* MAIN CONTAINER */
+    .form-container {
+      margin: 100px auto 60px;
+      width: 90%;
+      max-width: 750px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 40px 50px;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .form-container::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(88, 86, 214, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: -1;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.2); opacity: 0.8; }
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .form-header::before {
+      content: '📝';
+      font-size: 48px;
+      display: block;
+      margin-bottom: 16px;
+      animation: bounce 2s ease-in-out infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .form-header h1 {
+      font-size: 32px;
+      font-weight: 600;
+      color: #1d1d1f;
+      margin-bottom: 12px;
+      letter-spacing: -0.03em;
+    }
+
+    .form-header p {
+      color: #86868b;
+      font-size: 17px;
+      line-height: 1.5;
+    }
+
+    /* PROGRESS BAR */
+    .progress-container {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .progress-container::before {
+      content: "";
+      background: linear-gradient(90deg, #e5e5e7 0%, #d2d2d7 100%);
+      height: 3px;
+      width: 100%;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      z-index: 0;
+      border-radius: 3px;
+    }
+
+    .progress {
+      background: linear-gradient(90deg, #007aff 0%, #5856d6 100%);
+      height: 3px;
+      width: 0%;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 0;
+      border-radius: 3px;
+      box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
+    }
+
+    .circle {
+      height: 40px;
+      width: 40px;
+      background: white;
+      border: 3px solid #e5e5e7;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      font-size: 14px;
+      color: #86868b;
+      z-index: 1;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .circle.active {
+      background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+      border-color: #007aff;
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.4);
+      animation: stepPulse 0.6s ease-out;
+    }
+
+    @keyframes stepPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1.1); }
+    }
+
+    /* FORM */
+    .form-step {
+      display: none;
+      animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .step-title {
+      color: #1d1d1f;
+      margin-bottom: 28px;
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      padding-bottom: 16px;
+      border-bottom: 2px solid transparent;
+      background: linear-gradient(90deg, #007aff 0%, #5856d6 100%);
+      background-size: 100% 2px;
+      background-repeat: no-repeat;
+      background-position: 0 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .step-title::before {
+      content: '✨';
+      font-size: 24px;
+      animation: rotate 3s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
+      color: #1d1d1f;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    label .required {
+      color: #ff3b30;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+      font-size: 15px;
+      outline: none;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: white;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #007aff;
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    input:hover, textarea:hover, select:hover {
+      border-color: #007aff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    input[type="checkbox"],
+    input[type="radio"] {
+      width: auto;
+      margin-right: 8px;
+      margin-bottom: 0;
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    .checkbox-group,
+    .radio-group {
+      margin-bottom: 20px;
+    }
+
+    .checkbox-group label,
+    .radio-group label {
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      cursor: pointer;
+      padding: 12px 16px;
+      border-radius: 10px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .checkbox-group label:hover,
+    .radio-group label:hover {
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.05) 0%, rgba(88, 86, 214, 0.05) 100%);
+      border-color: rgba(0, 122, 255, 0.2);
+      transform: translateX(4px);
+    }
+
+    /* BUTTONS */
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 32px;
+      gap: 12px;
+    }
+
+    .next-btn, .back-btn, .submit-btn {
+      background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      flex: 1;
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .next-btn::before,
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .next-btn:hover::before,
+    .submit-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .next-btn:hover,
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+    }
+
+    .next-btn:active,
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    .back-btn {
+      background: #86868b;
+      box-shadow: 0 4px 16px rgba(134, 134, 139, 0.3);
+    }
+
+    .back-btn:hover {
+      background: #6e6e73;
+      transform: translateY(-2px);
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #34c759 0%, #30d158 100%);
+      box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+    }
+
+    .submit-btn:hover {
+      box-shadow: 0 6px 20px rgba(52, 199, 89, 0.4);
+    }
+
+    .submit-btn:disabled,
+    .next-btn:disabled {
+      background: #e5e5e7;
+      color: #86868b;
+      cursor: not-allowed;
+      box-shadow: none;
+      transform: none;
+    }
+
+    /* POPUP */
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 48px;
+      border-radius: 24px;
+      text-align: center;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 24px 72px rgba(0, 0, 0, 0.3);
+      animation: popIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .popup-content h3 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #1d1d1f;
+    }
+
+    .popup-content p {
+      color: #86868b;
+      line-height: 1.6;
+      margin-bottom: 28px;
+      font-size: 16px;
+    }
+
+    .popup-content button {
+      background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+      color: white;
+      border: none;
+      padding: 14px 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s;
+      box-shadow: 0 4px 16px rgba(0, 122, 255, 0.3);
+    }
+
+    .popup-content button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 122, 255, 0.4);
+    }
+
+    .error-message {
+      background: rgba(255, 59, 48, 0.1);
+      color: #ff3b30;
+      padding: 16px 20px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      display: none;
+      font-size: 14px;
+      border: 2px solid rgba(255, 59, 48, 0.2);
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-10px); }
+      75% { transform: translateX(10px); }
+    }
+
+    .loading {
+      text-align: center;
+      padding: 80px;
+      color: #86868b;
+      font-size: 18px;
+    }
+
+    .loading::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 40px;
+      margin: 24px auto 0;
+      border: 4px solid #e5e5e7;
+      border-top-color: #007aff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: saturate(180%) blur(20px);
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      color: #86868b;
+      text-align: center;
+      padding: 24px 0;
+      margin-top: 60px;
+      font-size: 12px;
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Completion Indicator */
+    .completion-badge {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: white;
+      padding: 16px 24px;
+      border-radius: 50px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      color: #1d1d1f;
+      z-index: 99;
+      animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .completion-badge.show {
+      display: flex;
+    }
+
+    .completion-badge .progress-ring {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: conic-gradient(#007aff 0%, #e5e5e7 0%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #007aff;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      header {
+        padding: 0 20px;
+      }
+
+      header ul {
+        gap: 16px;
+      }
+
+      .form-container {
+        padding: 32px 24px;
+        margin-top: 80px;
+      }
+
+      .form-header h1 {
+        font-size: 28px;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+
+      .completion-badge {
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">Pre-Disposal</div>
+  <nav>
+    <ul>
+      <li><a href="customer-dashboard.html">Home</a></li>
+      <li><a href="submit_product.html">Submit</a></li>
+      <li><a href="customer_service.html">Support</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- MAIN FORM -->
+<div class="form-container">
+  <div id="form-content">
+    <div class="loading">Loading form</div>
+  </div>
+</div>
+
+<!-- Completion Badge -->
+<div class="completion-badge" id="completion-badge">
+  <div class="progress-ring" id="progress-ring">0%</div>
+  <span>Form Progress</span>
+</div>
+
+<!-- Footer -->
+<footer>
+  <p>© 2025 Department of Creative AI, Universiti Teknologi Malaysia</p>
+  <p>📧 creativeai@utm.my • 📍 Kuala Lumpur, Malaysia</p>
+</footer>
+
+<!-- SUCCESS POPUP -->
+<div class="popup" id="successPopup">
+  <div class="popup-content">
+    <h3>🎉 Submission Successful!</h3>
+    <p id="success-message">Your form has been submitted successfully. Thank you!</p>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
+
+<!-- ERROR POPUP -->
+<div class="popup" id="errorPopup">
+  <div class="popup-content">
+    <h3>⚠️ Error</h3>
+    <p id="error-message">Unable to load form. Please try again later.</p>
+    <button onclick="closeErrorPopup()">OK</button>
+  </div>
+</div>
+
+<script>
+  const API_URL = 'http://localhost:4000/api';
+  let currentForm = null;
+  let currentStep = 0;
+  let formSteps = [];
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const formId = urlParams.get('id');
+
+  if (!formId) {
+    document.getElementById('error-message').textContent = 'No form ID provided. Please select a form from the homepage.';
+    document.getElementById('errorPopup').style.display = 'flex';
+  }
+
+  function updateCompletionBadge() {
+    const badge = document.getElementById('completion-badge');
+    const ring = document.getElementById('progress-ring');
+    const totalSteps = formSteps.length;
+    const completedSteps = currentStep + 1;
+    const percentage = Math.round((completedSteps / totalSteps) * 100);
+    
+    if (totalSteps > 1) {
+      badge.classList.add('show');
+      ring.textContent = percentage + '%';
+      ring.style.background = `conic-gradient(#007aff ${percentage}%, #e5e5e7 ${percentage}%)`;
+    }
+  }
+
+  function groupFieldsIntoSteps(fields) {
+  
+  const hasGroups = fields.some(field => field.group || field.field_group);
+  
+  if (hasGroups) {
+    const groupedFields = { personal: [], product: [], problem: [], other: [] };
+    fields.forEach(field => {
+      const group = field.group || field.field_group || 'other';
+      if (groupedFields[group]) {
+        groupedFields[group].push(field);
+      } else {
+        groupedFields.other.push(field);
+      }
+    });
+
+    const steps = [];
+    if (groupedFields.personal.length > 0) steps.push({ group: 'personal', fields: groupedFields.personal });
+    if (groupedFields.product.length > 0) steps.push({ group: 'product', fields: groupedFields.product });
+    if (groupedFields.problem.length > 0) steps.push({ group: 'problem', fields: groupedFields.problem });
+    if (groupedFields.other.length > 0) steps.push({ group: 'other', fields: groupedFields.other });
+
+    return steps.length > 0 ? steps : [{ group: 'other', fields: fields }];
+  } else {
+    // Auto-detect based on field labels
+    const groupedFields = { personal: [], product: [], problem: [], other: [] };
+    fields.forEach(field => {
+      const fieldLower = field.label.toLowerCase();
+      if (fieldLower.includes('name') || fieldLower.includes('email') || fieldLower.includes('phone')) {
+        groupedFields.personal.push(field);
+      } else if (fieldLower.includes('brand') || fieldLower.includes('model') || fieldLower.includes('category') || fieldLower.includes('product')) {
+        groupedFields.product.push(field);
+      } else if (fieldLower.includes('problem') || fieldLower.includes('issue') || fieldLower.includes('description')) {
+        groupedFields.problem.push(field);
+      } else {
+        groupedFields.other.push(field);
+      }
+    });
+
+    const steps = [];
+    if (groupedFields.personal.length > 0) steps.push({ group: 'personal', fields: groupedFields.personal });
+    if (groupedFields.product.length > 0) steps.push({ group: 'product', fields: groupedFields.product });
+    if (groupedFields.problem.length > 0) steps.push({ group: 'problem', fields: groupedFields.problem });
+    if (groupedFields.other.length > 0) steps.push({ group: 'other', fields: groupedFields.other });
+
+    return steps.length > 0 ? steps : [{ group: 'other', fields: fields }];
+  }
+}
+
+  function getStepTitle(group) {
+    const groupTitles = {
+      personal: 'Customer Information',
+      product: 'Product Information',
+      problem: 'Problem Assessment',
+      other: 'Additional Information'
+    };
+    return groupTitles[group] || 'Form Fields';
+  }
+
+  async function loadForm() {
+    if (!formId) return;
+
+    try {
+      const response = await fetch(`${API_URL}/forms/${formId}`);
+      if (!response.ok) throw new Error('Form not found');
+      
+      currentForm = await response.json();
+      renderForm();
+    } catch (error) {
+      console.error('Error loading form:', error);
+      document.getElementById('error-message').textContent = error.message || 'Form not found. Please check the URL and try again.';
+      document.getElementById('errorPopup').style.display = 'flex';
+    }
+  }
+
+  function renderForm() {
+    const container = document.getElementById('form-content');
+    const isMultiStep = currentForm.fields.length > 3;
+    
+    const steps = groupFieldsIntoSteps(currentForm.fields);
+    formSteps = steps;
+
+    let html = `
+      <div class="form-header">
+        <h1>${currentForm.title}</h1>
+        ${currentForm.description ? `<p>${currentForm.description}</p>` : ''}
+      </div>
+    `;
+
+    if (isMultiStep && steps.length > 1) {
+      html += `
+        <div class="progress-container">
+          <div class="progress" id="progress"></div>
+          ${steps.map((_, i) => `<div class="circle ${i === 0 ? 'active' : ''}">${i + 1}</div>`).join('')}
+        </div>
+      `;
+    }
+
+    html += '<div id="error-message-inline" class="error-message"></div>';
+    html += '<form id="dynamicForm">';
+
+    steps.forEach((step, stepIndex) => {
+      const stepTitle = getStepTitle(step.group);
+      const stepFields = step.fields;
+      
+      html += `
+        <div class="form-step ${stepIndex === 0 ? 'active' : ''}">
+          <h2 class="step-title">${stepTitle}</h2>
+          ${stepFields.map(field => renderField(field)).join('')}
+          <div class="btn-group">
+            ${stepIndex > 0 ? '<button type="button" class="back-btn">← Back</button>' : ''}
+            ${stepIndex < steps.length - 1 
+              ? '<button type="button" class="next-btn">Next →</button>' 
+              : '<button type="submit" class="submit-btn" id="submitBtn">Submit Form ✓</button>'}
+          </div>
+        </div>
+      `;
+    });
+
+    html += '</form>';
+    container.innerHTML = html;
+
+    initializeForm();
+    updateCompletionBadge();
+  }
+
+  function renderField(field) {
+  let html = `<label>${field.label}${field.required ? ' <span class="required">*</span>' : ''}</label>`;
+
+  switch (field.type) {
+    case 'textarea':
+      html += `<textarea name="${field.id}" ${field.required ? 'required' : ''} rows="4" placeholder="Enter ${field.label.toLowerCase()}..."></textarea>`;
+      break;
+    
+    case 'select':
+      html += `<select name="${field.id}" ${field.required ? 'required' : ''}>
+        <option value="">Select an option</option>
+        ${field.options ? field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('') : ''}
+      </select>`;
+      break;
+    
+    case 'checkbox':
+      html += `<div class="checkbox-group">`;
+      if (field.options) {
+        field.options.forEach((opt, i) => {
+          html += `
+            <label>
+              <input type="checkbox" name="${field.id}" value="${opt}">
+              ${opt}
+            </label>
+          `;
+        });
+      }
+      html += `</div>`;
+      break;
+    
+    case 'radio':
+      html += `<div class="radio-group">`;
+      if (field.options) {
+        field.options.forEach((opt, i) => {
+          html += `
+            <label>
+              <input type="radio" name="${field.id}" value="${opt}" ${field.required && i === 0 ? 'required' : ''}>
+              ${opt}
+            </label>
+          `;
+        });
+      }
+      html += `</div>`;
+      break;
+    
+    case 'file':
+      html += `<input type="file" name="${field.id}" ${field.required ? 'required' : ''} 
+        ${field.accept ? `accept="${field.accept}"` : ''}>`;
+      break;
+    
+    default:
+      html += `<input type="${field.type}" name="${field.id}" ${field.required ? 'required' : ''} placeholder="Enter ${field.label.toLowerCase()}...">`;
+  }
+
+  return html;
+}
+
+  function initializeForm() {
+    const form = document.getElementById('dynamicForm');
+    const steps = document.querySelectorAll('.form-step');
+    const nextBtns = document.querySelectorAll('.next-btn');
+    const backBtns = document.querySelectorAll('.back-btn');
+    const progress = document.getElementById('progress');
+    const circles = document.querySelectorAll('.circle');
+    const errorMessage = document.getElementById('error-message-inline');
+
+    nextBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (validateCurrentStep()) {
+          currentStep++;
+          updateForm();
+          errorMessage.style.display = 'none';
+        } else {
+          errorMessage.textContent = 'Please fill in all required fields';
+          errorMessage.style.display = 'block';
+        }
+      });
+    });
+
+    backBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentStep--;
+        updateForm();
+        errorMessage.style.display = 'none';
+      });
+    });
+
+    function validateCurrentStep() {
+      const currentStepElement = steps[currentStep];
+      const inputs = currentStepElement.querySelectorAll('input[required], select[required], textarea[required]');
+      let valid = true;
+
+      inputs.forEach(input => {
+        if (input.type === 'file' || input.type === 'checkbox') return;
+        
+        if (!input.value) {
+          valid = false;
+          input.style.borderColor = '#ff3b30';
+        } else {
+          input.style.borderColor = 'rgba(0, 0, 0, 0.1)';
+        }
+      });
+
+      return valid;
+    }
+
+    function updateForm() {
+      steps.forEach((step, i) => step.classList.toggle('active', i === currentStep));
+      circles.forEach((circle, i) => circle.classList.toggle('active', i <= currentStep));
+      if (progress) {
+        progress.style.width = (currentStep / (steps.length - 1)) * 100 + '%';
+      }
+      updateCompletionBadge();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!validateCurrentStep()) {
+        errorMessage.textContent = 'Please fill in all required fields';
+        errorMessage.style.display = 'block';
+        return;
+      }
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      const formData = new FormData(form);
+      const data = {};
+
+      for (let [key, value] of formData.entries()) {
+        if (data[key]) {
+          if (Array.isArray(data[key])) {
+            data[key].push(value);
+          } else {
+            data[key] = [data[key], value];
+          }
+        } else {
+          data[key] = value;
+        }
+      }
+
+      try {
+        // Create FormData for file upload
+        const formDataToSend = new FormData();
+        formDataToSend.append('formId', currentForm.id);
+        formDataToSend.append('formTitle', currentForm.title);
+        
+        // Separate image from other data
+        let imageFile = null;
+        for (let [key, value] of formData.entries()) {
+          if (value instanceof File) {
+            imageFile = value;
+            delete data[key];
+          }
+        }
+        
+        formDataToSend.append('data', JSON.stringify(data));
+        
+        if (imageFile) {
+          formDataToSend.append('productImage', imageFile);
+        }
+        
+        const response = await fetch(`${API_URL}/submissions`, {
+          method: 'POST',
+          body: formDataToSend
+        });
+
+        if (response.ok) {
+  const result = await response.json();
+  const submissionId = result.id;
+  
+  // Generate mock AI recommendation
+  const aiDecisions = ['retain', 'repair', 'reuse', 'recycle'];
+  const randomDecision = aiDecisions[Math.floor(Math.random() * 4)];
+  const confidence = 85 + Math.floor(Math.random() * 15); // 85-99%
+  
+  // Create AI recommendation
+  try {
+    await fetch(`${API_URL}/ai-reviews`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        submissionId: submissionId,
+        aiDecision: randomDecision,
+        aiConfidence: confidence,
+        aiReasoning: 'AI analyzed product condition, age, and repair costs to determine the best environmental option.'
+      })
+    });
+  } catch (error) {
+    console.error('Error creating AI review:', error);
+  }
+  
+  // Show success popup
+  document.getElementById('success-message').textContent = 
+    `Your ${currentForm.title} has been submitted successfully. Our AI is analyzing your submission. You'll receive a notification once our admin reviews it!`;
+  document.getElementById('successPopup').style.display = 'flex';
+  form.reset();
+  currentStep = 0;
+  updateForm();
+} else {
+          throw new Error('Submission failed');
+        }
+      } catch (error) {
+        console.error('Submission error:', error);
+        errorMessage.textContent = 'Error submitting form. Please try again.';
+        errorMessage.style.display = 'block';
+      }
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Form ✓';
+    });
+  }
+
+  function closePopup() {
+    document.getElementById('successPopup').style.display = 'none';
+    window.location.href = 'customer-dashboard.html#track';
+  }
+
+  function closeErrorPopup() {
+    document.getElementById('errorPopup').style.display = 'none';
+    window.location.href = 'customer-dashboard.html';
+  }
+
+  loadForm();
+</script>
+
+</body>
+</html>
