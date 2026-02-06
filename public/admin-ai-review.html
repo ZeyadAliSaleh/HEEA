@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Review - Admin Panel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: linear-gradient(180deg, #1d1d1f 0%, #2d2d2f 100%);
+      color: white;
+      padding: 24px 0;
+      position: fixed;
+      height: 100vh;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar-header {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-header h2 {
+      font-size: 24px;
+	  font-weight: 700;
+	  letter-spacing: -0.5px;
+	  margin-bottom: 4px;
+	  color: white;
+    }
+
+    .sidebar-header p {
+	  font-size: 12px;
+	  color: #86868b;
+	  font-weight: 400;
+	}
+
+    .sidebar-menu {
+      padding: 24px 0;
+    }
+
+    .menu-item {
+      padding: 12px 24px;
+	  display: flex;
+	  align-items: center;
+	  gap: 12px;
+	  color: rgba(255, 255, 255, 0.8);
+	  text-decoration: none;
+	  font-size: 15px;
+	  font-weight: 500;
+	  transition: all 0.3s;
+	  border-left: 3px solid transparent;
+    }
+
+    .menu-item span {
+	  font-size: 20px;
+	}
+
+    .menu-item:hover, .menu-item.active {
+      background: rgba(255, 255, 255, 0.1);
+	  border-left-color: #0071e3;
+	  color: white;
+    }
+
+    .main-content {
+      margin-left: 260px;
+      flex: 1;
+      padding: 40px;
+    }
+
+    .top-bar {
+      background: white;
+      padding: 24px 32px;
+      border-radius: 18px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .top-bar h1 {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 100px 20px;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #667eea;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .info-row {
+      display: flex;
+      padding: 16px 0;
+      border-bottom: 1px solid #f5f5f7;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      width: 140px;
+      font-weight: 500;
+      color: #86868b;
+      font-size: 14px;
+    }
+
+    .info-value {
+      flex: 1;
+      color: #1d1d1f;
+      font-size: 15px;
+    }
+
+    .ai-recommendation {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+      margin-bottom: 24px;
+    }
+
+    .ai-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .ai-badge {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .ai-decision {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-transform: uppercase;
+    }
+
+    .confidence-bar {
+      background: rgba(255, 255, 255, 0.2);
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 16px;
+    }
+
+    .confidence-fill {
+      background: white;
+      height: 100%;
+      transition: width 1s ease-out;
+    }
+
+    .decision-steps {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 12px;
+      margin-top: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .admin-decision {
+      background: white;
+      border-radius: 18px;
+      padding: 32px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .decision-options {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .decision-card {
+      border: 2px solid #e5e5e7;
+      border-radius: 16px;
+      padding: 24px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: center;
+      position: relative;
+    }
+
+    .decision-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    .decision-card.selected {
+      border-color: #007aff;
+      background: linear-gradient(135deg, rgba(0, 122, 255, 0.1) 0%, rgba(88, 86, 214, 0.1) 100%);
+    }
+
+    .decision-card.ai-suggested {
+      border-color: #34c759;
+      background: rgba(52, 199, 89, 0.05);
+    }
+
+    .decision-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .decision-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #1d1d1f;
+    }
+
+    .decision-desc {
+      font-size: 13px;
+      color: #86868b;
+      line-height: 1.4;
+    }
+
+    .ai-tag {
+      background: #34c759;
+      color: white;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      margin-top: 10px;
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    .notes-section {
+      margin-bottom: 24px;
+    }
+
+    .notes-section label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #1d1d1f;
+    }
+
+    .notes-section textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      border: 2px solid #e5e5e7;
+      border-radius: 12px;
+      font-size: 15px;
+      font-family: inherit;
+      resize: vertical;
+      transition: all 0.3s;
+    }
+
+    .notes-section textarea:focus {
+      outline: none;
+      border-color: #007aff;
+      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-approve {
+      background: linear-gradient(135deg, #34c759 0%, #30d158 100%);
+      color: white;
+      box-shadow: 0 4px 16px rgba(52, 199, 89, 0.3);
+    }
+
+    .btn-approve:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(52, 199, 89, 0.4);
+    }
+
+    .btn-approve:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-cancel {
+      background: #f5f5f7;
+      color: #1d1d1f;
+    }
+
+    .btn-cancel:hover {
+      background: #e8e8ed;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 24px;
+      padding: 48px;
+      max-width: 500px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+
+    .modal-content h2 {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .modal-content p {
+      color: #86868b;
+      margin-bottom: 32px;
+      font-size: 17px;
+    }
+
+    .error-state {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .error-icon {
+      font-size: 80px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 1200px) {
+      .decision-options {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .decision-options {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Admin Panel</h2>
+        <p>Pre-Disposal System</p>
+      </div>
+      <nav class="sidebar-menu">
+        <a href="admin-dashboard.html" class="menu-item">
+          <span>🏠</span>
+          Dashboard
+        </a>
+        <a href="form-builder.html" class="menu-item">
+          <span>📋</span>
+          Form Builder
+        </a>
+        <a href="submission.html" class="menu-item">
+          <span>📝</span>
+          Submissions
+        </a>
+        <a href="#" class="menu-item active">
+          <span>🤖</span>
+          AI Review
+        </a>
+        <a href="customer-dashboard.html" class="menu-item">
+          <span>🌐</span>
+          View Website
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="top-bar">
+        <h1>🧠 AI Review & Decision</h1>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="loading">
+        <div class="loading-spinner"></div>
+        <h3>Loading submission data...</h3>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="error-state" style="display: none;">
+        <div class="error-icon">⚠️</div>
+        <h2>Error Loading Data</h2>
+        <p id="errorMessage"></p>
+        <button class="btn btn-approve" onclick="window.location.href='submission.html'">← Back to Submissions</button>
+      </div>
+
+      <!-- Content (Hidden until loaded) -->
+      <div id="contentArea" style="display: none;">
+        <!-- Customer Info & Submission Details -->
+        <div class="content-grid">
+          <div class="card">
+            <h3 class="card-title">👤 Customer Information</h3>
+            <div id="customerInfo"></div>
+          </div>
+
+          <div class="card">
+            <h3 class="card-title">📦 Submission Details</h3>
+            <div id="submissionDetails"></div>
+          </div>
+        </div>
+
+        <!-- AI Recommendation -->
+        <div id="aiRecommendationSection"></div>
+
+        <!-- Admin Decision -->
+        <div class="admin-decision">
+          <h3 class="card-title">⚖️ Admin Decision</h3>
+          <p style="color: #86868b; margin-bottom: 24px;">
+            Review the AI recommendation and select your final decision. You can agree with AI or choose a different option.
+          </p>
+
+          <div class="decision-options" id="decisionOptions"></div>
+
+          <div class="notes-section">
+            <label>📝 Admin Notes (for Customer):</label>
+            <textarea id="admin-notes" placeholder="Add notes that will be visible to the customer..."></textarea>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-cancel" onclick="window.location.href='submission.html'">
+              ← Cancel
+            </button>
+            <button class="btn btn-approve" onclick="approveDecision()">
+              ✅ Approve & Send to Customer
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-icon">✅</div>
+      <h2>Decision Approved!</h2>
+      <p>The customer has been notified of your decision.</p>
+      <button class="btn btn-approve" onclick="closeModal()">
+        Done
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'http://localhost:4000/api';
+    let currentSubmission = null;
+    let selectedDecision = null;
+
+    async function loadSubmission() {
+      const params = new URLSearchParams(window.location.search);
+      const submissionId = params.get('id');
+
+      if (!submissionId) {
+        showError('No submission ID provided');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/submissions/${submissionId}`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        currentSubmission = await response.json();
+        
+        // Normalize field names (handle both camelCase and snake_case)
+        if (!currentSubmission.formId && currentSubmission.form_id) {
+          currentSubmission.formId = currentSubmission.form_id;
+        }
+        if (!currentSubmission.formTitle && currentSubmission.form_title) {
+          currentSubmission.formTitle = currentSubmission.form_title;
+        }
+        if (!currentSubmission.submittedAt && currentSubmission.submitted_at) {
+          currentSubmission.submittedAt = currentSubmission.submitted_at;
+        }
+        if (!currentSubmission.aiRecommendation && currentSubmission.ai_recommendation) {
+          currentSubmission.aiRecommendation = currentSubmission.ai_recommendation;
+        }
+        
+        console.log('Loaded submission:', currentSubmission);
+
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('contentArea').style.display = 'block';
+
+        displayCustomerInfo();
+        displaySubmissionDetails();
+        displayAIRecommendation();
+        displayDecisionOptions();
+
+      } catch (error) {
+        console.error('Error loading submission:', error);
+        showError(`Failed to load submission: ${error.message}`);
+      }
+    }
+
+    function displayCustomerInfo() {
+      const email = currentSubmission.email || 'N/A';
+      const submittedDate = currentSubmission.submittedAt 
+        ? new Date(currentSubmission.submittedAt).toLocaleDateString()
+        : 'N/A';
+
+      const html = `
+        <div class="info-row">
+          <div class="info-label">Email:</div>
+          <div class="info-value">${email}</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Submitted:</div>
+          <div class="info-value">${submittedDate}</div>
+        </div>
+      `;
+
+      document.getElementById('customerInfo').innerHTML = html;
+    }
+
+    function displaySubmissionDetails() {
+      const data = currentSubmission.data || {};
+      
+      function isFileUrl(value) {
+        if (typeof value !== 'string') return false;
+        return value.includes('/uploads/') || 
+               value.startsWith('http://localhost:4000/uploads/') ||
+               value.startsWith('http') && (value.match(/\.(jpg|jpeg|png|gif|mp4|mov|avi|webm|pdf)$/i));
+      }
+
+      function getFileType(url) {
+        const ext = url.split('.').pop().toLowerCase();
+        if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) return 'image';
+        if (['mp4', 'mov', 'avi', 'webm'].includes(ext)) return 'video';
+        return 'document';
+      }
+
+      function renderFilePreview(url, label) {
+        const fileType = getFileType(url);
+        
+        if (fileType === 'image') {
+          return `
+            <div style="margin-top: 12px;">
+              <a href="${url}" target="_blank">
+                <img src="${url}" alt="${label}" style="max-width: 100%; max-height: 300px; border-radius: 12px; cursor: pointer; border: 2px solid #e5e5e7; transition: all 0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+              </a>
+              <p style="margin-top: 8px; text-align: center;">
+                <a href="${url}" target="_blank" style="color: #007aff; text-decoration: none; font-size: 13px;">🔗 View full size</a>
+              </p>
+            </div>
+          `;
+        } else if (fileType === 'video') {
+          return `
+            <div style="margin-top: 12px;">
+              <video controls style="max-width: 100%; max-height: 300px; border-radius: 12px; border: 2px solid #e5e5e7;">
+                <source src="${url}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+              <p style="margin-top: 8px; text-align: center;">
+                <a href="${url}" target="_blank" style="color: #007aff; text-decoration: none; font-size: 13px;">🔗 Open in new tab</a>
+              </p>
+            </div>
+          `;
+        } else {
+          return `
+            <div style="margin-top: 12px; padding: 16px; background: #f5f5f7; border-radius: 10px; text-align: center;">
+              <div style="font-size: 40px; margin-bottom: 8px;">📄</div>
+              <a href="${url}" target="_blank" style="color: #007aff; text-decoration: none; font-weight: 500;">
+                📥 Download File
+              </a>
+            </div>
+          `;
+        }
+      }
+
+      let html = '<div style="display: flex; flex-direction: column; gap: 16px;">';
+
+      for (const [key, value] of Object.entries(data)) {
+        if (key !== 'email') {
+          const isFile = isFileUrl(value);
+          
+          html += `
+            <div class="info-row" style="border-bottom: 1px solid #f5f5f7; padding: 16px 0; display: block;">
+              <div class="info-label" style="font-weight: 600; color: #86868b; font-size: 13px; margin-bottom: 8px;">${key}:</div>
+              <div class="info-value" style="color: #1d1d1f; font-size: 15px;">
+                ${isFile ? renderFilePreview(value, key) : value}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      html += '</div>';
+      document.getElementById('submissionDetails').innerHTML = html;
+    }
+
+    function displayAIRecommendation() {
+      const ai = currentSubmission.aiRecommendation;
+      
+      if (!ai) {
+        document.getElementById('aiRecommendationSection').innerHTML = `
+          <div class="card" style="text-align: center; padding: 60px;">
+            <h3>⏳ AI Analysis Pending</h3>
+            <p style="color: #86868b; margin-top: 10px;">AI recommendation has not been generated yet.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const confidence = Math.round((ai.confidence || 0) * 100);
+      const decision = (ai.recommendation || 'pending').toUpperCase();
+      const decisionIcon = getDecisionIcon(ai.recommendation);
+
+      let html = `
+        <div class="ai-recommendation">
+          <div class="ai-header">
+            <h3 class="card-title" style="color: white; margin: 0;">🧠 AI Analysis & Recommendation</h3>
+            <div class="ai-badge">Powered by Claude AI</div>
+          </div>
+
+          <div class="ai-decision">
+            <span>${decisionIcon}</span>
+            <span>${decision}</span>
+          </div>
+
+          <p style="font-size: 17px; line-height: 1.6; opacity: 0.95;">
+            ${ai.reasoning || 'No reasoning provided'}
+          </p>
+
+          <div style="margin-top: 20px;">
+            <strong>Confidence Score: ${confidence}%</strong>
+            <div class="confidence-bar">
+              <div class="confidence-fill" id="confidenceFill" style="width: 0%;"></div>
+            </div>
+          </div>
+
+          ${ai.analysis ? `
+            <div class="decision-steps">
+              <strong style="display: block; margin-bottom: 12px;">AI Analysis:</strong>
+              <p style="opacity: 0.9; line-height: 1.6;">${ai.analysis}</p>
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      document.getElementById('aiRecommendationSection').innerHTML = html;
+      
+      setTimeout(() => {
+        document.getElementById('confidenceFill').style.width = confidence + '%';
+      }, 300);
+      
+      selectedDecision = ai.recommendation || 'pending';
+    }
+
+    function displayDecisionOptions() {
+      const aiDecision = currentSubmission.aiRecommendation?.recommendation || '';
+      
+      // All 7 decision options
+      const decisions = [
+        { value: 'repair', icon: '🔧', title: 'REPAIR', desc: 'Fix the product if cost-effective' },
+        { value: 'repurpose', icon: '🔨', title: 'REPURPOSE', desc: 'Modify for a different use' },
+        { value: 'reuse', icon: '🔄', title: 'RESELL / TRADE-IN', desc: 'Donate or sell to others' },
+        { value: 'donate', icon: '🎁', title: 'DONATE / GIVE AWAY', desc: 'Gift to someone who needs it' },
+        { value: 'rent', icon: '💰', title: 'RENT', desc: 'Lease the product temporarily' },
+        { value: 'recycle', icon: '♻️', title: 'RECYCLE', desc: 'Beyond repair, proper disposal recommended' },
+        { value: 'retain', icon: '✅', title: 'RETAIN', desc: 'Keep using the product' }
+      ];
+
+      let html = decisions.map(d => {
+        const isAISuggested = d.value === aiDecision;
+        const isSelected = d.value === selectedDecision;
+        
+        return `
+          <div class="decision-card ${isAISuggested ? 'ai-suggested' : ''} ${isSelected ? 'selected' : ''}" 
+               data-decision="${d.value}">
+            <div class="decision-icon">${d.icon}</div>
+            <div class="decision-title">${d.title}</div>
+            <div class="decision-desc">${d.desc}</div>
+            ${isAISuggested ? '<div class="ai-tag">✨ AI Recommended</div>' : ''}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('decisionOptions').innerHTML = html;
+
+      document.querySelectorAll('.decision-card').forEach(card => {
+        card.addEventListener('click', function() {
+          document.querySelectorAll('.decision-card').forEach(c => c.classList.remove('selected'));
+          this.classList.add('selected');
+          selectedDecision = this.getAttribute('data-decision');
+        });
+      });
+    }
+
+    async function approveDecision() {
+      if (!selectedDecision) {
+        alert('Please select a decision first');
+        return;
+      }
+
+      const adminNotes = document.getElementById('admin-notes').value.trim();
+      
+      if (!adminNotes) {
+        if (!confirm('You haven\'t added any notes for the customer. Continue anyway?')) {
+          return;
+        }
+      }
+      
+      const approveBtn = document.querySelector('.btn-approve');
+      approveBtn.disabled = true;
+      approveBtn.textContent = 'Saving...';
+      
+      try {
+        // Create clean AI recommendation object
+        const aiRecommendation = {
+          recommendation: currentSubmission.aiRecommendation?.recommendation || selectedDecision,
+          confidence: currentSubmission.aiRecommendation?.confidence || 0.85,
+          reasoning: currentSubmission.aiRecommendation?.reasoning || '',
+          analysis: currentSubmission.aiRecommendation?.analysis || '',
+          finalDecision: selectedDecision,
+          reviewedBy: 'Admin',
+          reviewedAt: new Date().toISOString(),
+          adminNotes: adminNotes
+        };
+
+        // Create update payload with only necessary fields
+        const updateData = {
+          aiRecommendation: aiRecommendation,  // Match database column name
+          status: 'accepted'
+        };
+
+        console.log('Sending update:', JSON.stringify(updateData, null, 2));
+
+        const response = await fetch(`${API_URL}/submissions/${currentSubmission.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updateData)
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Server error:', errorText);
+          
+          let errorMessage = `Failed to update submission: ${response.status}`;
+          try {
+            const errorJson = JSON.parse(errorText);
+            if (errorJson.error) {
+              errorMessage = errorJson.error;
+            }
+            if (errorJson.details) {
+              errorMessage += '\n\nDetails: ' + errorJson.details;
+            }
+          } catch (e) {
+            errorMessage += '\n\nServer response: ' + errorText;
+          }
+          
+          throw new Error(errorMessage);
+        }
+
+        const result = await response.json();
+        console.log('Update successful:', result);
+
+        document.getElementById('successModal').classList.add('show');
+        
+      } catch (error) {
+        console.error('Error approving decision:', error);
+        alert(`Failed to save decision:\n\n${error.message}\n\nPlease check the console for more details.`);
+        
+        approveBtn.disabled = false;
+        approveBtn.textContent = '✅ Approve & Send to Customer';
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('show');
+      window.location.href = 'submission.html';
+    }
+
+    function showError(message) {
+      document.getElementById('loadingState').style.display = 'none';
+      document.getElementById('errorMessage').textContent = message;
+      document.getElementById('errorState').style.display = 'block';
+    }
+
+    function getDecisionIcon(decision) {
+      const icons = {
+        repair: '🔧',
+        repurpose: '🔨',
+        reuse: '🔄',
+        donate: '🎁',
+        rent: '💰',
+        recycle: '♻️',
+        retain: '✅'
+      };
+      return icons[decision] || '❓';
+    }
+
+    // Load submission on page load
+    window.addEventListener('DOMContentLoaded', loadSubmission);
+  </script>
+
+</body>
+</html>
